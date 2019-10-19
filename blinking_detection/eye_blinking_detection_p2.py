@@ -101,7 +101,7 @@ for (i, f) in enumerate(stream):
             right_eye_ratio = get_blinking_ratio([42, 43, 44, 45, 46, 47], landmarks)
             blinking_ratio = (left_eye_ratio + right_eye_ratio) / 2
 
-            if blinking_ratio > 4:
+            if blinking_ratio > 3.5:
                 continuousFrames+=1
             else:
                 if continuousFrames>=5:
@@ -110,6 +110,9 @@ for (i, f) in enumerate(stream):
                 continuousFrames = 0
                 frameback=frame
         else:
+            if continuousFrames>=5:
+                send_face(frameback, frameback, amount)
+                amount = input()
             continuousFrames=0
         print(continuousFrames)
 
