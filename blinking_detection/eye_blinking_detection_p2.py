@@ -1,3 +1,4 @@
+from __future__ import print_function
 import cv2
 import numpy as np
 import dlib
@@ -7,7 +8,6 @@ from picamera import PiCamera
 from threading import Thread
 
 # import the necessary packages
-from __future__ import print_function
 from imutils.video.pivideostream import PiVideoStream
 from imutils.video import FPS
 from picamera.array import PiRGBArray
@@ -15,14 +15,23 @@ from picamera import PiCamera
 import argparse
 import imutils
 import time
-import cv2
-
+import requests
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-def send_face(frame):
+def send_face(frame1, frame2, amount):
     # TODO: Send Frames to Flask 
-	print("Blink sent to Flask")
+    print("Blink sent to Flask")
+    cv2.imwrite("image1.jpg", frame1)
+    cv2.imwrite("image2.jpg", frame2)
+    multipart_form_data = {
+        'file1': ("image1.jpg", open("image1.jpg", 'rb')),
+        'file2': ("image2.jpg", open("image2.jpg", 'rb')),
+        'amount': amount,
+        'pos': 12345
+    }
+    requests.post('http://192.168.10.140:5001/', data={"amount": amount, "pos": 12345}, files={"file1": open("image1.jpg", 'rb'), "file2": open("image2.jpg", 'rb')})
+
 
 
 def midpoint(p1 ,p2):
@@ -35,9 +44,6 @@ def get_blinking_ratio(eye_points, facial_landmarks):
     right_point = (facial_landmarks.part(eye_points[3]).x, facial_landmarks.part(eye_points[3]).y)
     center_top = midpoint(facial_landmarks.part(eye_points[1]), facial_landmarks.part(eye_points[2]))
     center_bottom = midpoint(facial_landmarks.part(eye_points[5]), facial_landmarks.part(eye_points[4]))
-
-    hor_line = cv2.line(frame, left_point, right_point, (0, 255, 0), 2)
-    ver_line = cv2.line(frame, center_top, center_bottom, (0, 255, 0), 2)
 
     hor_line_lenght = hypot((left_point[0] - right_point[0]), (left_point[1] - right_point[1]))
     ver_line_lenght = hypot((center_top[0] - center_bottom[0]), (center_top[1] - center_bottom[1]))
@@ -59,9 +65,9 @@ args = vars(ap.parse_args())
 
 # initialize the camera and stream
 camera = PiCamera()
-camera.resolution = (320, 240)
-camera.framerate = 32
-rawCapture = PiRGBArray(camera, size=(320, 240))
+camera.resolution = (640, 480)
+camera.framerate = 30
+rawCapture = PiRGBArray(camera, size=(640, 480))
 stream = camera.capture_continuous(rawCapture, format="bgr",
 	use_video_port=True)
 
@@ -71,6 +77,8 @@ time.sleep(2.0)
 fps = FPS().start()
 
 # loop over some frames
+frameback = {}
+amount = input()
 for (i, f) in enumerate(stream):
 	# grab the frame from the stream and resize it to have a maximum
 	# width of 400 pixels
@@ -78,36 +86,39 @@ for (i, f) in enumerate(stream):
 	frame = imutils.resize(frame, width=400)
 
 	# check to see if the frame should be displayed to our screen
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    faces = detector(gray)
-    if len(faces)==1:
-        face = faces[0]
+        faces = detector(gray)
+        if len(faces)==1:
+            face = faces[0]
         #x, y = face.left(), face.top()
         #x1, y1 = face.right(), face.bottom()
         #cv2.rectangle(frame, (x, y), (x1, y1), (0, 255, 0), 2)
 
-        landmarks = predictor(gray, face)
+            landmarks = predictor(gray, face)
 
-        left_eye_ratio = get_blinking_ratio([36, 37, 38, 39, 40, 41], landmarks)
-        right_eye_ratio = get_blinking_ratio([42, 43, 44, 45, 46, 47], landmarks)
-        blinking_ratio = (left_eye_ratio + right_eye_ratio) / 2
+            left_eye_ratio = get_blinking_ratio([36, 37, 38, 39, 40, 41], landmarks)
+            right_eye_ratio = get_blinking_ratio([42, 43, 44, 45, 46, 47], landmarks)
+            blinking_ratio = (left_eye_ratio + right_eye_ratio) / 2
 
-        if blinking_ratio > 4.5:
-            cv2.putText(frame, "BLINKING", (50, 150), font, 7, (255, 0, 0))
-            continuousFrames+=1
+            if blinking_ratio > 4:
+                continuousFrames+=1
+            else:
+                if continuousFrames>=5:
+                    send_face(frame, frameback, amount)
+                    amount = input()
+                continuousFrames = 0
+                frameback=frame
         else:
-            continuousFrames = 0
-    print(continuousFrames)
-    if(continuousFrames>=30):
-        send_face(frame)
+            continuousFrames=0
+        print(continuousFrames)
 
 
-    cv2.imshow("Frame", frame)
+        cv2.imshow("Frame", frame)
 
-    key = cv2.waitKey(1)
-    if key == 27:
-        break
+        key = cv2.waitKey(1)
+        if key == 27:
+            break
 
 
 	# clear the stream in preparation for the next frame and update
@@ -115,9 +126,6 @@ for (i, f) in enumerate(stream):
 	rawCapture.truncate(0)
 	fps.update()
 
-	# check to see if the desired number of frames have been reached
-	if i == args["num_frames"]:
-		break
 
 # stop the timer and display FPS information
 fps.stop()
