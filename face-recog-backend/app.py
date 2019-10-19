@@ -13,8 +13,12 @@ import ssl
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = 'knn/temp'
 USERDATA_PATH = 'userdata/secretdata.json'
-CREDITOR_DETAILS = None
-DIST_THRESHOLD = 0.3 #the lower the distance threshold, the more strict the algorithm will be
+CREDITOR_DETAILS = {
+	"boc_acc_id": "210334",
+	"boc_sub_id": "Sub0001-002"
+}
+DIST_THRESHOLD = 0.5 #the lower the distance threshold, the more strict the algorithm will be
+
 app = Flask(__name__)
 
 
@@ -34,9 +38,10 @@ def upload_image():
     '''
     # Check if a valid image file was uploaded
     if request.method == 'POST':
+        print(request.form)
         #if request.
-        amount = request.amount
-        pos_id = request.pos
+        amount = request.form['amount']
+        pos_id = request.form['pos']
 
         try:
             amount = float(amount)
@@ -63,41 +68,42 @@ def upload_image():
                 account = match_face_to_account_details(face)
                 if account == None:
                     print("User not registered properly.")
-                    return
-                transactionSuccessful = make_transaction(account, CREDITOR_DETAILS, amount, pos_location)
+                    return "False"
+                transactionSuccessful = make_transaction(account, CREDITOR_DETAILS, amount, pos_id)
                 if transactionSuccessful:
                     send_email(account["email"], "invoice")
                     print("Transaction complete") #send request to raspberry pi to make lights green
-                    return True
+                    return "True"
                 print("Transaction failed") #send request to raspberry pi
-        return False
+        return "False"
         # If no valid image file was uploaded, show the file upload form:
 
 def detect_faces_in_image(file_stream):
     # Load the uploaded image file
     img = face_recognition.load_image_file(file_stream)
-    faces = predict(file_stream,model_path="hi",distance_threshold=SENSITIVITY)
+    faces = predict(img,model_path="hi",distance_threshold=DIST_THRESHOLD)
     known_faces = 0
+    print(faces)
     for face in faces:
-        if known_faces[0] != 'unknown':
+        if face[0] != 'unknown':
             known_faces += 1
     if known_faces != 1:
         return False # either 0 or more than 1 face detected
-    return face[0][0]
+    return faces[0][0]
 
 def match_face_to_account_details(face):
     with open(USERDATA_PATH) as json_file:
         data = json.load(json_file)
         try:
-            if data[entry]["enabled"] == true:
-                return data[entry] #{boc_acc_id: XX, boc_sub_id: XX}
+            if data[face]["enabled"] == "true":
+                return data[face] #{boc_acc_id: XX, boc_sub_id: XX}
             else:
-                send_email(data[entry]["email"], "fraud")
+                send_email(data[face]["email"], "fraud")
         except:
             return None
 
-def make_transaction(debtor_details, creditor_details, amount):
-    response = requests.post(url = f"http://192.168.10.140:3000/payFace?creditorIban={creditor_details[boc_acc_id]}&debtorIban={debtor_details[boc_acc_id]}&amount={float(amount)}&subId={creditor_details[boc_sub_id]}")
+def make_transaction(debtor_details, creditor_details, amount, pos_id):
+    response = requests.post(url = f"http://192.168.10.140:3000/payFace?creditorIban={creditor_details['boc_acc_id']}&debtorIban={debtor_details['boc_acc_id']}&amount={float(amount)}&subId={creditor_details['boc_sub_id']}")
     if response == "Complete":
         return True
     elif response == "wrong" or response == "missing info":
