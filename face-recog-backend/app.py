@@ -103,11 +103,13 @@ def match_face_to_account_details(face):
             return None
 
 def make_transaction(debtor_details, creditor_details, amount, pos_id):
-    response = requests.post(url = f"http://192.168.10.140:3000/payFace?creditorIban={creditor_details['boc_acc_id']}&debtorIban={debtor_details['boc_acc_id']}&amount={float(amount)}&subId={creditor_details['boc_sub_id']}")
+    response = requests.get(url = f"http://192.168.10.140:3000/payFace?creditorIban={creditor_details['boc_acc_id']}&debtorIban={debtor_details['boc_acc_id']}&amount={float(amount)}&subId={creditor_details['boc_sub_id']}")._content
     if response == "Complete":
         return True
     elif response == "wrong" or response == "missing info":
         return False
+    else:
+        print(response)
 
 
 def send_to_raspberry(request):
