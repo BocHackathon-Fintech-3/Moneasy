@@ -8,6 +8,11 @@ cap = cv2.VideoCapture(0)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
+def send_face(frame):
+    # TODO: Send Frames to Flask 
+	print("Blink sent to Flask")
+
+
 def midpoint(p1 ,p2):
     return int((p1.x + p2.x)/2), int((p1.y + p2.y)/2)
 
@@ -28,12 +33,14 @@ def get_blinking_ratio(eye_points, facial_landmarks):
     ratio = hor_line_lenght / ver_line_lenght
     return ratio
 
+continuousFrames = 0
 while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = detector(gray)
-    for face in faces:
+    if len(faces)==1:
+        face = faces[0]
         #x, y = face.left(), face.top()
         #x1, y1 = face.right(), face.bottom()
         #cv2.rectangle(frame, (x, y), (x1, y1), (0, 255, 0), 2)
@@ -46,6 +53,11 @@ while True:
 
         if blinking_ratio > 4.5:
             cv2.putText(frame, "BLINKING", (50, 150), font, 7, (255, 0, 0))
+            continuousFrames+=1
+        else:
+            continuousFrames = 0
+    if(continuousFrames>=30):
+        send_face(frame)
 
 
     cv2.imshow("Frame", frame)
