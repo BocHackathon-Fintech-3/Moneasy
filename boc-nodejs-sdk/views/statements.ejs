@@ -1,0 +1,37 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div style="width: 100%; text-align: center">
+    <div class="header">
+        <img src="/img/sdk_boc_logo.png">
+    </div>
+    <hr>
+
+<div style="width: 100%; text-align: center">
+    <h2>Available accounts</h2>
+    <h4>Statements for account with id: <%= statements.account.accountId %> </h4>
+    
+    <br>
+
+    <button onclick="location.href = '/'">Go back</button>
+
+    <br>
+
+    <% for (transaction of statements.transaction) { %>
+
+    <p> <%= JSON.stringify(transaction) %> </p>
+
+    <p><strong> Transaction ID: </strong> <%= transaction.id %> </p>
+    <p><strong> Transaction amount: </strong> <%= transaction.transactionAmount.amount %> <%= transaction.transactionAmount.currency %> </p>
+    <p><strong> Transaction description: </strong> <%= transaction.description %> </p>
+    <p><strong> Transaction type: </strong> <%= transaction.transactionType %> </p>
+    <p><strong> Transaction merchant name: </strong> <%= transaction.merchant.name %> </p>
+    <p><strong> Transaction value date: </strong> <%= transaction.valueDate %> </p>
+    
+    <hr>
+
+    <% } %>
+
+    <br>
+</div>
+
+</div>

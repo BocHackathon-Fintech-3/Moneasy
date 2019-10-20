@@ -1,0 +1,72 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div style="width: 100%; text-align: center">
+    <div class="header">
+        <img src="/img/sdk_boc_logo.png">
+    </div>
+    <hr>
+
+    <% if(boc_api.subStatus.status == "ACTV" && boc_api.subStatus.selectedAccounts.length > 0){ %>
+
+    <br>
+    <button  onclick="location.href = '/accounts'">Get available accounts</button>
+    
+    <br>
+    <br>
+
+    <hr>
+
+    <br>
+
+    <div class="container">
+    <a >Account ID: </a><input type="text" id="accountId" >
+    <br> 
+    <br>
+    <button  onclick="location.href = '/accounts/' + document.getElementById('accountId').value">Get account details</button>
+    <br>
+    <br>
+    <button  onclick="location.href = '/accounts/' + document.getElementById('accountId').value + '/balances'">Get account balances</button>
+    <br>
+    <br>
+    </div>
+    <button  onclick="location.href = '/accounts/' + document.getElementById('accountId').value + '/statements'">Get account statements</button>
+    <br> 
+    <br>
+    <hr>
+    <br>
+
+    <div class="container">
+    <a >Debtor's accountId:</a> <input type="text" id="debtorIban" >
+    <br>
+    <br>
+    <a >Creditor's accountId: </a><input type="text" id="creditorIban" >
+    <br>
+    <br>
+    <a >Amount: </a><input type="text" id="amount" >
+    <br>
+    <br>
+    <br>
+    <button  onclick="location.href = '/pay?debtorIban=' + document.getElementById('debtorIban').value + '&creditorIban=' + document.getElementById('creditorIban').value + '&amount=' + document.getElementById('amount').value">Pay</button>
+    </div>
+
+    <br> 
+    <hr>
+    <br>
+
+    <div class="container">
+    <a >Payment Id:</a> <input type="text" id="paymentId" >
+    <br>
+    <br>
+    <button  onclick="location.href = '/payment/' + document.getElementById('paymentId').value">Get payment information</button>
+    </div>
+    <br> 
+    <hr>
+
+
+
+    <% } else { %>
+
+    <button onclick="location.href = '<%= boc_api.get_login_url() %>'">Connect to your BOC Account</button>
+
+    <% } %>
+</div>

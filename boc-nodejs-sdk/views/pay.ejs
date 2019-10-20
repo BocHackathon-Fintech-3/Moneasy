@@ -1,0 +1,32 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div style="width: 100%; text-align: center">
+  <div class="header">
+      <img src="/img/sdk_boc_logo.png">
+  </div>
+  <hr>
+
+<div style="width: 100%; text-align: center">
+    <h2>Payment information</h2>
+    
+    <br>
+    <br>
+
+    <p><strong> Payment id: </strong> <%= paymentId %></p>
+    <p><strong> Status: </strong> <%= result.code %></p>
+    <p><strong> Description: </strong> <%= result.description %></p>
+
+    <hr>
+    <br>
+
+    <button onclick="location.href = '/'">Go back</button>
+</div>
+</div>
+
+<!-- <script>
+setTimeout(
+    function() {
+      location.href = '/'
+    }, 5000);
+</script> -->
+

@@ -1,0 +1,36 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div style="width: 100%; text-align: center">
+    <div class="header">
+        <img src="/img/sdk_boc_logo.png">
+    </div>
+    <hr>
+
+<div style="width: 100%; text-align: center">
+    <h2>Account details</h2>
+    <p><strong> Details for account with id: </strong> <%= account.accountId %> </p>
+    
+    
+    <br>
+    <br>
+
+    <p><strong> Account holder: </strong> <%= account.accountName %> </p>
+    <p><strong> Account iban: </strong> <%= account.IBAN %> </p>
+    <p><strong> Account bank id: </strong> <%= account.bankId %> </p>
+    <p><strong> Account type: </strong> <%= account.accountType %> </p>
+
+    <hr>
+
+    <h3> Account balance </h3>
+    <p><strong> Currency: </strong> <%= account.currency %> </p>
+    <p><strong> Available balance: </strong> <%= account.balances[0].amount %> </p>
+    <p><strong> Current balance: </strong> <%= account.balances[1].amount %> </p>
+
+    <br>
+
+    <hr>
+    <br>
+
+    <button onclick="location.href = '/'">Go back</button>
+</div>
+</div>
