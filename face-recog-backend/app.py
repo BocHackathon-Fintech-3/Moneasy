@@ -13,7 +13,7 @@ import random
 import string
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-sys.path.insert("email_templates",0)
+sys.path.insert(1,"email-templates/")
 from build_email import buildEmail
 # You can change this to any folder on your system
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -83,7 +83,7 @@ def upload_image():
 						return "False"
 					transactionSuccessful = make_transaction(account, CREDITOR_DETAILS, amount, pos_id)
 					if transactionSuccessful:
-						send_email(account["email"], "receipt", "Your Eaze Receipt", additional={randomString(),account["email"],pos_id,"Nicosia, Cyprus",datetime.now().strftime("%B %d, %Y"), amount})
+						send_email(account["email"], "receipt", "Your Eaze Receipt", additional={"receipt_number": randomString(),"email": account["email"],"pos_id": pos_id,"location": "Nicosia, Cyprus","time": datetime.now().strftime("%B %d, %Y"), "amount":amount})
 						print("Transaction complete") #send request to raspberry pi to make lights green
 						return "True"
 					print("Transaction failed") #send request to raspberry pi
@@ -160,8 +160,8 @@ def send_to_raspberry(request):
 def send_email(email, emailType, subjectline, additional={}):
 	content = buildEmail(emailType,additional)
 	port = 465
-	my_email = "eazepay@gmail.com"
-	password = "fintech!"
+	my_email = "andreasnohacks@gmail.com"
+	password = "boston69"
 	context = ssl.create_default_context()
 	message = MIMEMultipart("alternative")
 	message["Subject"] = subjectline
@@ -170,7 +170,7 @@ def send_email(email, emailType, subjectline, additional={}):
 	part1 = MIMEText(content,"html")
 	message.attach(part1)
 	with smtplib.SMTP_SSL("smtp.gmail.com",port,context=context) as server:
-		server.login(email, password)
+		server.login(my_email, password)
 		server.sendmail(my_email, email, message.as_string())
 	return True
 
