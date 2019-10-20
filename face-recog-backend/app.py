@@ -97,6 +97,7 @@ def upload_image():
 				username = randomString()
 			boc_acc_id = request.form['boc_acc_id']
 			boc_sub_id = request.form['boc_sub_id']
+			print(email, boc_acc_id, boc_sub_id)
 			imagecnt = int(request.form['imagecnt'])
 			os.mkdir('knn/train/'+username)
 			data[username] = {
@@ -109,8 +110,8 @@ def upload_image():
 			for image_id in range(imagecnt):
 				# Save Image File in the training directory
 				(request.files["image"+str(image_id)]).save('knn/train/'+username+'/'+str(image_id)+'.jpg')
-			sendEmail(email, "registration", "Registration complete.")
-			train('knn/train/', model_save_path='hi')
+			send_email(email, "registration", "Registration complete.")
+			# train('knn/train/', model_save_path='hi')
 
 			return "complete!"
 
