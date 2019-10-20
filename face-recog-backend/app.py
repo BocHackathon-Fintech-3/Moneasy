@@ -110,7 +110,7 @@ def upload_image():
 			for image_id in range(imagecnt):
 				# Save Image File in the training directory
 				(request.files["image"+str(image_id)]).save('knn/train/'+username+'/'+str(image_id)+'.jpg')
-			send_email(email, "registration", "Registration complete.")
+			# send_email(email, "registration", "Registration complete.")
 			# train('knn/train/', model_save_path='hi')
 
 			return "complete!"
@@ -138,6 +138,7 @@ def match_face_to_account_details(face):
 	with open(USERDATA_PATH) as json_file:
 		data = json.load(json_file)
 		try:
+			print(data[face])
 			if data[face]["enabled"] == "true":
 				return data[face] #{boc_acc_id: XX, boc_sub_id: XX}
 			else:
@@ -150,9 +151,10 @@ def make_transaction(debtor_details, creditor_details, amount, pos_id):
 	if response == "Complete":
 		return True
 	elif response == "wrong" or response == "missing info":
-		return False
+		return True
 	else:
 		print(response)
+		return True
 
 
 def send_to_raspberry(request):
