@@ -1,0 +1,29 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div style="width: 100%; text-align: center">
+    <div class="header">
+        <img src="/img/sdk_boc_logo.png">
+    </div>
+    <hr>
+
+<div style="width: 100%; text-align: center">
+    <h2>Available accounts</h2>
+    <h4>Consent to account information provided by user:</h4>
+    
+    <br>
+    <br>
+
+    <% for (account of accounts) { %>
+
+    <p> <strong><%= account[0].accountName %></strong>:   (IBAN) <%= account[0].IBAN %> -  (Account ID) <%= account[0].accountId %> </p>
+
+    <% } %>
+
+    <br>
+
+    <hr>
+    <br>
+
+    <button onclick="location.href = '/'">Go back</button>
+</div>
+</div>

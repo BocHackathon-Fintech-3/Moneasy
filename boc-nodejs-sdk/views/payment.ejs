@@ -1,0 +1,39 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div style="width: 100%; text-align: center">
+    <div class="header">
+        <img src="/img/sdk_boc_logo.png">
+    </div>
+    <hr>
+
+<div style="width: 100%; text-align: center">
+    <h1>Payment details</h1>
+    <h4>Details for payment: <%= payment.paymentId %> </h4>
+    
+    <br>
+    <br>
+
+    <p><strong> Payment details: </strong> <%= payment.paymentDetails %> </p>
+    <p><strong> Payment status: </strong> <%= payment.status.code %> </p>
+    <p><strong> <%= payment.status.description %></strong></p>
+
+
+    <hr>
+
+    <p><strong> Debtor: </strong> <%= payment.debtor.accountId %> </p>
+    <p><strong> Creditor: </strong> <%= payment.creditor.accountId %> </p>
+    <p><strong> Amount: </strong>  <%= payment.transactionAmount.amount %> <%= payment.transactionAmount.currency %></p>
+
+    <hr>
+
+    <p><strong> Payment execution date: </strong> <%= payment.executionDate %> </p>
+    <p><strong> Payment value date: </strong> <%= payment.valueDate %> </p>
+
+    <br>
+
+    <hr>
+    <br>
+
+    <button onclick="location.href = '/'">Go back</button>
+</div>
+</div>

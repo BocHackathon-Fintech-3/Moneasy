@@ -1,0 +1,27 @@
+button {
+    background-color: #006580; color: white; width: 200px; border-radius: 8px; font-size: 14px; padding:5px
+}
+
+a{
+    float: left;
+}
+
+input{
+    float: right;
+}
+
+.container{
+    max-width: 300px; margin: auto;
+}
+
+.header{
+    background-color: #006580;
+}
+
+img{
+    width: 700px;
+}
+
+body{
+    font-family: sans-serif;
+}
